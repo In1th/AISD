@@ -12,7 +12,7 @@
 #include <array>
 #include <vector>
 
-#define LIST_END nullptr
+constexpr auto LIST_END = nullptr;
 
 
 template <class T> class Node {
@@ -98,13 +98,14 @@ public:
 
 };
 
-template <class T> class PointerList{
+template <class T>
+class PointerList{
 protected:
     const static int removesNeeded{2};
 
-    Node<T>* head{LIST_END};
     int elems{0};
-    public:
+public:
+    Node<T>* head{LIST_END};
 
     /**
      * Adds an element to the beginning of the ArrayList
@@ -141,7 +142,7 @@ protected:
      * @param e - element that method is searching for
      * @return true if e element if found, otherwise false
      */
-    virtual bool contains(T e) = 0;
+    virtual bool find(T e) = 0;
 
     /**
      * Sorts an ArrayList ascending
@@ -153,10 +154,10 @@ protected:
 };
 
 
-template <class T> class OneWayPointerList : public PointerList<T>{
+template <class T>
+class OneWayPointerList : public PointerList<T>{
 
 public:
-
 
     void add(T e){
            Node<T> *newNode = new OneWayNode<T>(e, this->head);
@@ -249,6 +250,8 @@ public:
 
 template <class T> class TwoWayPointerList : public PointerList<T>{
 
+    Node<T>*last{LIST_END};
+
 public:
 
     void add(T e){
@@ -256,6 +259,8 @@ public:
             if (this->elems > 0)
                 this->head->setPrev(newNode);
             this->head = newNode;
+            if (this->elems == 0)
+                last = this->head;
             this->elems++;
     }
     void add(T e,int i){
@@ -300,6 +305,14 @@ public:
         }
         delete buf;
     }
+    T removeLast(){
+        Node<T> *prev = last->getPrev();
+        T v = last->getVal();
+        prev->getNext(LIST_END);
+        delete last;
+        last = prev;
+        return v;
+    }
     bool contains(T e) {
         Node<T>* i = this->head;
         while(i != this->head){
@@ -328,10 +341,10 @@ public:
     void print(){
         std::cout << std::endl;
 
-        Node<T>* buf = this->head;
+        Node<T>* buf = this->last;
         while(buf != LIST_END){
             std::cout << buf->getVal() << " ";
-            buf = buf->getNext();
+            buf = buf->getPrev();
         }
         std::cout << std::endl;
     }
