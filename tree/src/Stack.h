@@ -43,9 +43,9 @@ public:
         }
     }
     T poll() {
-        if (!isEmpty()){
-            return array.at(top--);
-        }
+        if (!isEmpty())
+            return array.at(--top);
+        return NULL;
     }
     bool isEmpty() {
         return top == 0;
@@ -100,4 +100,4 @@ public:
 
 };
 
-#endif STACK_H
+#endif //STACK_H
